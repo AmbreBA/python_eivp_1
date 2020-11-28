@@ -122,7 +122,6 @@ def courbe_stat(capteur, variable, start_date, end_date):
     plt.show()
 
 
-
 def humidex(capteur, start_date, end_date) :
     dates = tab_donnees(capteur, 'temp', start_date, end_date)[0]
     temp = tab_donnees(capteur, 'temp', start_date, end_date)[1]
@@ -130,7 +129,7 @@ def humidex(capteur, start_date, end_date) :
     H = []
     n = len(temp)
     date_stop = datetime.datetime.strptime(start_date, '%Y-%m-%d') + datetime.timedelta(days = 1)
-    jours = [str((date_stop)- datetime.timedelta(days = 1))[:10]]           #on prélève seulement la date et non l'heure
+    jours = []
     k = 0
     while (str((date_stop)- datetime.timedelta(days = 1)) <= end_date):
         i = 0
@@ -142,11 +141,12 @@ def humidex(capteur, start_date, end_date) :
             k = k+1
         i = sum_i/compteur
         H.append(round(i, 2))
-        jours.append(str((date_stop))[:10])
+        jours.append(str((date_stop) - datetime.timedelta(days = 1))[:10]) #on prélève seulement la date et non l'heure
         date_stop = date_stop + datetime.timedelta(days = 1)
 
     for j in range(len(jours)):
         print('le ' + jours[j] + ', le coef humidex vaut : ' + str(H[j]))
+
 
 
 
