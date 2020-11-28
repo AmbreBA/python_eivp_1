@@ -113,58 +113,35 @@ def courbe_stat(capteur, variable, start_date, end_date):
 
 
 
-def coef_correlation(capteur, variable_1, variable_2, start_date, end_date):
-    l_1 = tab_donnees(capteur, variable_1, start_date, end_date)
-    l_2 = tab_donnees(capteur, variable_2, start_date, end_date)
-    n = len(l_1[0])
-    dates = l_1[0]
-    variable_1 = l_1[1]
-    dates_2 = l_2[0]
-    variable_2 = l_2[1]
-    abscisse_points = []
-    sigma_1 = []
-    sigma_2 = []
-    produit = []
-    cov = []
-
+def humidex(capteur, start_date, end_date) :
+    dates = tab_donnees(capteur, 'temp', start_date, end_date)[0]
+    temp = tab_donnees(capteur, 'temp', start_date, end_date)[1]
+    humidity = tab_donnees(capteur, 'humidity', start_date, end_date)[1]
+    H = []
+    n = len(temp)
     date_stop = datetime.datetime.strptime(start_date, '%Y-%m-%d') + datetime.timedelta(days = 1)
     k = 0
     while (str((date_stop)- datetime.timedelta(days = 1)) <= end_date):
-        moy_1_day = 0
-        moy_2_day = 0
-        ecart_moy_carre_1 = 0
-        ecart_moy_carre_2 = 0
-        s_1_day = 0
-        s_2_day = 0
-        variable_1_day = []
-        variable_2_day = []
-
+        i = 0
+        compteur = 0
+        sum_i = 0
         while (k < len(dates) and (datetime.datetime.strptime(dates[k], '%Y-%m-%d %H:%M:%S') < date_stop)):
-            s_1_day = s_1_day + variable_1[k]
-            s_2_day = s_2_day + variable_2[k]
-            variable_1_day.append(variable_1[k])
-            variable_2_day.append(variable_2[k])
+            sum_i = sum_i + temp[k] + (5/9)*(6.112*10**(7.5*(temp[k]/(237.7+temp[k])))*(humidity[k]/100)-10)
+            compteur = compteur+1
             k = k+1
-
-        moy_1_day = s_1_day/len(variable_1_day)
-        moy_2_day = s_2_day/len(variable_2_day)
-
-        for i in range(variable_1_day):
-            ecart_moy_carre_1 += (variable_1_day[i] - moy_1_day)**2
-            ecart_moy_carre_2 += (variable_2_day[i] - moy_1_day)**2
-        sigma_1 = sqrt(ecart_moy_carre_1/len(variable_1_day))
-        sigma_2 = sqrt(ecart_moy_carre_2/len(variable_2_day))
-
-
-        abscisse_points.append(dates[(k + (k-len(var_1_day)))//2])                #on prend la date au milieu de la journée (la date de la mesure médiane sur chaque jour)
+        i = sum_i/compteur
+        H.append(round(i, 2))
         date_stop = date_stop + datetime.timedelta(days = 1)
+    return H
+
+
 
 
 def coef_correlation(capteur, variable_1, variable_2, start_date, end_date):
     l_1 = tab_donnees(capteur, variable_1, start_date, end_date)
     l_2 = tab_donnees(capteur, variable_2, start_date, end_date)
-    n = len(l_1[0])
     dates = l_1[0]
+    n = len(dates)
     var_1 = l_1[1]
     var_2 = l_2[1]
     sum_1 = 0
@@ -174,26 +151,26 @@ def coef_correlation(capteur, variable_1, variable_2, start_date, end_date):
     produit = 0
 
     for i in range(n):
-        sum_1 += var_1[i]
-        sum_2 += var_2[i]
+        sum_1 = sum_1 + var_1[i]
+        sum_2 = sum_2 + var_2[i]
     moy_1 = sum_1/n
     moy_2 = sum_2/n
 
     for k in range(n):
         ecart_moy_carre_1 += (var_1[i] - moy_1)**2
         ecart_moy_carre_2 += (var_2[i] - moy_2)**2
-        produit += var_1[i]*var_2[i]
+        produit += (var_1[i] - moy_1)*(var_2[i] - moy_2)
     sigma_1 = sqrt(ecart_moy_carre_1/n)
     sigma_2 = sqrt(ecart_moy_carre_2/n)
-    covariance = produit/n - moy_1*moy_2
-
+    covariance = produit/n
     r = covariance/(sigma_1*sigma_2)
+
     plt.plot(dates, var_1, label = variable_1)
     plt.plot(dates, var_2, label = variable_2)
     plt.title('r = ' + str(r))
     plt.legend()
     plt.show()
-    return r
+    return (r, moy_1, moy_2, sigma_1, sigma_2, produit, ecart_moy_carre_1, n)
 
 
 
@@ -203,37 +180,7 @@ def similarites(capteur_1, capteur_2, variable, start_date, end_date):
     l_2 = tab_donnees(capteur_2, variable, start_date, end_date)
 
 
-#def humidex():
 
-    #the values to our user dict are the other lines in the file mf[1:]
-#     H = []
-#     with open('post-32566-EIVP_KM.csv', 'r') as f:
-#      fichier_csv = csv.reader(f)
-#     for row in my_file:
-#       if any(row):
-#       H.append(row)
-#     file_keys = H[0]
-#     file_temp= H[2:] #choose row/rows you want
-#     file_humidity= H[3:]
-
-    #Combine the two lists, turning into a list of dictionaries, using the keys list as the key and the people list as the values
-#    my_list = []
-#    for value in file_values:
-#     my_list.append(dict(zip(file_keys, file_values)))
-
-#    return the list of dictionaries
-#    return H
-
-def humidex(temp, humidity) : #humidex(start_date, end_date)
-    #capteur =
-    #essayer d'attribuer variable = 'humidity' et 'temp'
-    H = []
-    #l = tab_donnees(capteur, variable, start_date, end_date)
-    n= len(temp) #n = len(l)
-    for i in range (n) :
-        c = temp[i] + (5/9)*(6.112*10**(7.5*(temp[i]/(237.7+temp[i])))*(humidity[i]/100)-10)
-        H.append(c)
-    return H
 
 
 
