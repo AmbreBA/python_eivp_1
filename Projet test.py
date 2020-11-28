@@ -203,7 +203,37 @@ def similarites(capteur_1, capteur_2, variable, start_date, end_date):
     l_2 = tab_donnees(capteur_2, variable, start_date, end_date)
 
 
+#def humidex():
 
+    #the values to our user dict are the other lines in the file mf[1:]
+#     H = []
+#     with open('post-32566-EIVP_KM.csv', 'r') as f:
+#      fichier_csv = csv.reader(f)
+#     for row in my_file:
+#       if any(row):
+#       H.append(row)
+#     file_keys = H[0]
+#     file_temp= H[2:] #choose row/rows you want
+#     file_humidity= H[3:]
+
+    #Combine the two lists, turning into a list of dictionaries, using the keys list as the key and the people list as the values
+#    my_list = []
+#    for value in file_values:
+#     my_list.append(dict(zip(file_keys, file_values)))
+
+#    return the list of dictionaries
+#    return H
+
+def humidex(temp, humidity) : #humidex(start_date, end_date)
+    #capteur =
+    #essayer d'attribuer variable = 'humidity' et 'temp'
+    H = []
+    #l = tab_donnees(capteur, variable, start_date, end_date)
+    n= len(temp) #n = len(l)
+    for i in range (n) :
+        c = temp[i] + (5/9)*(6.112*10**(7.5*(temp[i]/(237.7+temp[i])))*(humidity[i]/100)-10)
+        H.append(c)
+    return H
 
 
 
