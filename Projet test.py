@@ -122,6 +122,8 @@ def courbe_stat(capteur, variable, start_date, end_date):
     plt.show()
 
 
+
+
 def humidex(capteur, start_date, end_date) :
     dates = tab_donnees(capteur, 'temp', start_date, end_date)[0]
     temp = tab_donnees(capteur, 'temp', start_date, end_date)[1]
@@ -141,12 +143,11 @@ def humidex(capteur, start_date, end_date) :
             k = k+1
         i = sum_i/compteur
         H.append(round(i, 2))
-        jours.append(str((date_stop) - datetime.timedelta(days = 1))[:10]) #on prélève seulement la date et non l'heure
+        jours.append(str((date_stop) - datetime.timedelta(days = 1))[:10])      #on prélève seulement la date et non l'heure
         date_stop = date_stop + datetime.timedelta(days = 1)
 
     for j in range(len(jours)):
-        print('le ' + jours[j] + ', le coef humidex vaut : ' + str(H[j]))
-
+        print('Le ' + jours[j] + ', le coef humidex vaut : ' + str(H[j]))
 
 
 
@@ -189,15 +190,44 @@ def coef_correlation(capteur, variable_1, variable_2, start_date, end_date):
 
 
 
+def tri(dates, variables, indicateur, n1, n2):
+    n = len(dates)
+    for k in range(n1, n):                                                      #dates[:n1] est déjà triée au départ
+        while (dates[k] < dates[k-1] and k > 0):
+            dates[k], dates[k-1] = dates[k-1], dates[k]
+            variables[k], variables[k-1] = variables[k-1], variables[k]
+            indicateur[k], indicateur[k-1] = indicateur[k-1], indicateur[k]
+            k = k-1
+    return (dates, variables, indicateur)
+
+
+
 def similarites(capteur_1, capteur_2, variable, start_date, end_date):
-    l_1 = tab_donnees(capteur_1, variable, start_date, end_date)
-    l_2 = tab_donnees(capteur_2, variable, start_date, end_date)
+    dates_1 = tab_donnees(capteur_1, variable, start_date, end_date)[0]
+    variable_1 = tab_donnees(capteur_1, variable, start_date, end_date)[1]
+    n1 = len(dates_1)
+    dates_2 = tab_donnees(capteur_2, variable, start_date, end_date)[0]
+    variable_2 = tab_donnees(capteur_2, variable, start_date, end_date)[1]
+    n2 = len(dates_2)
+    dates = dates_1 + dates_2
+    variables = variable_1 + variable_2
+    n = n1 + n2
+    indicateur = n1*[1] + n2*[2]
+
+    dates_triees = tri(dates, variables, indicateur, n1, n2)[0]
+    variables_triees = tri(dates, variables, indicateur, n1, n2)[1]
+    indicateur_trie = tri(dates, variables, indicateur, n1, n2)[2]
+    for k in range(n):
+        if indicateur_trie[k] == 1:
+            plt.scatter(dates_triees[k], variables_triees[k], color = 'blue', marker = '+')
+        else:
+            plt.scatter(dates_triees[k], variables_triees[k], color = 'red', marker = '+')
+    plt.show()
 
 
 
 
-
-
+def ecart(capteur_1, capteur_2, variable, start_date, end_date):                 #pour chaque jour, on compare les  max des  2 capteurs,et on ne représente que les points consécutifs qui dépassent le max du capteur le plus faible, à condition que ce max dépasse un certain seuil
 
 
 
